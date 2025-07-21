@@ -1,1 +1,6 @@
-# desafio-das-cores
+- Erick Douglas Silva Campos
+- Regras do Jogo - Destaque as variações da sua versão solicitadas nas [**Restrições**](https://www.notion.so/Restri-es-22e06b94b9cb80498501e54a72ed1fd7?pvs=21)
+- Como jogar
+- Como executar
+- Créditos - Fontes de referência utilizadas
+- Licença do projeto

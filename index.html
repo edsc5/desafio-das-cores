@@ -7,45 +7,25 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
+        <h1>Desafio das Cores</h1>
 
-        <div id="pre-game-screen" class="screen active">
-            <h1>Desafio das Cores</h1>
-            <p>Digite seu nome e clique em Jogar para começar!</p>
-            <input type="text" id="player-name-input" placeholder="Seu nome" maxlength="15">
-            <button id="start-button">Jogar</button>
+        <div class="game-info">
+            <span>Pontuação: <b id="score">0</b></span>
+            <span>Tempo Restante: <b id="timer">10</b>s</span>
         </div>
 
-        <div id="game-screen" class="screen">
-            <div class="game-header">
-                <div class="info-box">
-                    <span>Pontos</span>
-                    <span id="score">0</span>
-                </div>
-                <div class="target-color-info">
-                    <span>Clique na cor:</span>
-                    <span id="target-color-name">VERDE</span>
-                </div>
-                <div class="info-box">
-                    <span>Tempo</span>
-                    <span id="timer">60</span>
-                </div>
-            </div>
-            <div id="game-board">
-                </div>
-        </div>
+        <h2 id="target-color-text">Clique na cor: amarelo</h2>
+        
+        <div id="game-board"></div>
 
-        <div id="post-game-screen" class="screen">
-            <h1>Fim de Jogo!</h1>
-            <p><span id="final-player-name">Jogador</span>, sua pontuação final foi:</p>
-            <h2 id="final-score">0</h2>
-            <button id="restart-button">Jogar Novamente</button>
-        </div>
+        <div id="feedback-message"></div>
 
+        <button id="start-button" class="active">Iniciar Jogo</button>
     </div>
 
     <script src="js/script.js"></script>

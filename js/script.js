@@ -1,88 +1,64 @@
-// --- SELEÇÃO DE ELEMENTOS DO DOM ---
-// Telas
-const preGameScreen = document.getElementById('pre-game-screen');
-const gameScreen = document.getElementById('game-screen');
-const postGameScreen = document.getElementById('post-game-screen');
-
-// Botões e Inputs
-const startButton = document.getElementById('start-button');
-const restartButton = document.getElementById('restart-button');
-const playerNameInput = document.getElementById('player-name-input');
-
-// Elementos do Jogo
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const gameBoard = document.getElementById('game-board');
-const targetColorNameDisplay = document.getElementById('target-color-name');
+const targetColorText = document.getElementById('target-color-text');
+const feedbackMessage = document.getElementById('feedback-message');
+const startButton = document.getElementById('start-button');
 
-// Elementos da Tela Final
-const finalPlayerNameDisplay = document.getElementById('final-player-name');
-const finalScoreDisplay = document.getElementById('final-score');
-
-
-// --- CONSTANTES E VARIÁVEIS DE ESTADO DO JOGO ---
-const GAME_DURATION = 60; // Duração do jogo em segundos
+//CONSTANTES E VARIÁVEIS DE ESTADO DO JOGO
+const GAME_DURATION = 10;
 const COLORS = [
-    { name: 'VERMELHO', value: 'rgb(255, 0, 0)' },
-    { name: 'VERDE', value: 'rgb(0, 255, 0)' },
-    { name: 'AZUL', value: 'rgb(0, 0, 255)' },
-    { name: 'AMARELO', value: 'rgb(255, 255, 0)' },
-    { name: 'ROXO', value: 'rgb(128, 0, 128)' },
-    { name: 'LARANJA', value: 'rgb(255, 165, 0)' }
+    { name: 'vermelho', value: '#E74C3C' },
+    { name: 'verde', value: '#2ECC71' },
+    { name: 'azul', value: '#3498DB' },
+    { name: 'amarelo', value: '#F1C40F' }
 ];
 
 let score = 0;
 let timer = GAME_DURATION;
 let timerId = null;
-let playerName = '';
+let gameActive = false;
 let targetColor = {};
 
-// --- FUNÇÕES DO JOGO ---
-
-// Função para iniciar o jogo
+//FUNÇÕES DO JOGO
 function startGame() {
-    playerName = playerNameInput.value || 'Jogador'; // Pega o nome ou usa 'Jogador'
+    //Reset
     score = 0;
     timer = GAME_DURATION;
     scoreDisplay.textContent = score;
     timerDisplay.textContent = timer;
+    gameActive = true;
+    startButton.classList.remove('active');
+    feedbackMessage.textContent = '';
 
-    // Troca de telas
-    preGameScreen.classList.remove('active');
-    postGameScreen.classList.remove('active');
-    gameScreen.classList.add('active');
-
-    // Inicia o timer
+    //Inicia o timer
     timerId = setInterval(updateTimer, 1000);
 
-    // Gera a primeira rodada
     generateRound();
 }
 
-// Função para gerar uma nova rodada (cores e alvo)
 function generateRound() {
-    gameBoard.innerHTML = ''; // Limpa a grade anterior
+    if (!gameActive) return;
 
-    // Sorteia a cor alvo
+    gameBoard.innerHTML = '';
+
+    //Sorteia a cor alvo
     targetColor = COLORS[Math.floor(Math.random() * COLORS.length)];
-    targetColorNameDisplay.textContent = targetColor.name;
-    targetColorNameDisplay.style.backgroundColor = targetColor.value; // Mostra a cor visualmente
+    targetColorText.textContent = `Clique na cor: ${targetColor.name}`;
 
     const squares = [];
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 9; i++) { //Loop
         const square = document.createElement('div');
         square.classList.add('color-square');
-
-        // Sorteia uma cor para o quadrado
+        
         const randomColor = COLORS[Math.floor(Math.random() * COLORS.length)];
         square.style.backgroundColor = randomColor.value;
-        square.dataset.colorValue = randomColor.value; // Guarda o valor da cor para comparação
+        square.dataset.colorValue = randomColor.value;
 
         square.addEventListener('click', handleSquareClick);
         squares.push(square);
     }
-
-    // Garante que pelo menos um quadrado tenha a cor alvo
+    
     const hasTargetColor = squares.some(sq => sq.dataset.colorValue === targetColor.value);
     if (!hasTargetColor) {
         const randomIndex = Math.floor(Math.random() * squares.length);
@@ -90,27 +66,37 @@ function generateRound() {
         squares[randomIndex].dataset.colorValue = targetColor.value;
     }
 
-    // Adiciona os quadrados à grade
     squares.forEach(square => gameBoard.appendChild(square));
 }
 
-// Função para lidar com o clique em um quadrado
 function handleSquareClick(event) {
+    if (!gameActive) return;
+
     const clickedColor = event.target.dataset.colorValue;
 
     if (clickedColor === targetColor.value) {
-        // Acertou
-        score += 10;
+        score += 5;
+        showFeedback('Acertou!', 'success');
     } else {
-        // Errou
-        score -= 5;
+        score -= 2;
+        showFeedback('Errou!', 'error');
     }
 
-    scoreDisplay.textContent = score; // Atualiza a pontuação na tela
-    generateRound(); // Gera a próxima rodada
+    scoreDisplay.textContent = score;
+    generateRound();
 }
 
-// Função para atualizar o timer
+function showFeedback(message, type) {
+    feedbackMessage.textContent = message;
+    feedbackMessage.className = type === 'success' ? 'feedback-success' : 'feedback-error';
+
+    setTimeout(() => {
+        if (gameActive) {
+            feedbackMessage.textContent = '';
+        }
+    }, 1000);
+}
+
 function updateTimer() {
     timer--;
     timerDisplay.textContent = timer;
@@ -120,20 +106,18 @@ function updateTimer() {
     }
 }
 
-// Função para finalizar o jogo
 function endGame() {
-    clearInterval(timerId); // Para o timer
-
-    // Mostra a tela de fim de jogo
-    gameScreen.classList.remove('active');
-    postGameScreen.classList.add('active');
-
-    // Exibe as informações finais
-    finalPlayerNameDisplay.textContent = playerName;
-    finalScoreDisplay.textContent = score;
+    gameActive = false;
+    clearInterval(timerId);
+    gameBoard.innerHTML = '<p class="end-text">Fim de Jogo!</p>';
+    targetColorText.textContent = '';
+    
+    feedbackMessage.className = 'feedback-final';
+    feedbackMessage.textContent = `Tempo esgotado! Sua pontuação final: ${score}`;
+    
+    //botão para jogar novamente
+    startButton.textContent = 'Jogar Novamente';
+    startButton.classList.add('active');
 }
 
-
-// --- EVENT LISTENERS ---
 startButton.addEventListener('click', startGame);
-restartButton.addEventListener('click', startGame);
